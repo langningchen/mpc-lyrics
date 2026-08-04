@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish Windows x64 release
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Audit, build, and smoke test
+        shell: powershell
+        run: .\scripts\build.ps1 -ProjectRoot $env:GITHUB_WORKSPACE
+
+      - name: Create release archive
+        shell: powershell
+        run: |
+          $archive = "MpcLyrics-$env:GITHUB_REF_NAME-win-x64.zip"
+          Compress-Archive -Path .\dist\* -DestinationPath $archive -CompressionLevel Optimal
+
+      - name: Create or update GitHub Release
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $archive = ".\MpcLyrics-$tag-win-x64.zip"
+
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+              gh release upload $tag $archive --clobber
+          } else {
+              gh release create $tag $archive --verify-tag --generate-notes --title "MPC Lyrics $tag"
+          }
+
+          if ($LASTEXITCODE -ne 0) {
+              throw "GitHub Release failed with exit code $LASTEXITCODE"
+          }

@@ -1,0 +1,359 @@
+<Window
+    x:Class="MpcLyrics.UI.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="using:MpcLyrics.UI"
+    Title="MPC Lyrics 设置">
+
+    <Grid Background="#FF202020" RequestedTheme="Dark">
+        <Grid.Resources>
+            <Style x:Key="UnconstrainedFlyoutPresenterStyle" TargetType="FlyoutPresenter">
+                <Setter Property="MaxWidth" Value="1000" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="8" />
+            </Style>
+        </Grid.Resources>
+
+        <Grid x:Name="RootGrid" Padding="16,14" RowSpacing="10" Loaded="RootGrid_Loaded">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="42" />
+            </Grid.RowDefinitions>
+
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock FontSize="17" FontWeight="SemiBold" Text="歌词设置" VerticalAlignment="Center" />
+                <ScrollViewer
+                    x:Name="StatusScroller"
+                    Grid.Column="1"
+                    Height="24"
+                    HorizontalScrollBarVisibility="Hidden"
+                    HorizontalScrollMode="Enabled"
+                    IsTabStop="False"
+                    VerticalAlignment="Center"
+                    VerticalScrollBarVisibility="Hidden"
+                    VerticalScrollMode="Disabled">
+                    <TextBlock x:Name="StatusText" Opacity="0.62" Text="修改会实时显示" TextWrapping="NoWrap" VerticalAlignment="Center" />
+                </ScrollViewer>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="42" />
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="WindowCategoryButton" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <FontIcon FontSize="15" Glyph="&#xE8A7;" />
+                        <TextBlock Text="窗口" />
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout
+                            x:Name="WindowFlyout"
+                            FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                            Opening="CategoryFlyout_Opening"
+                            Placement="Bottom"
+                            ShouldConstrainToRootBounds="False">
+                            <StackPanel Width="300" Spacing="14">
+                                <TextBlock FontSize="20" FontWeight="SemiBold" Text="歌词窗口" />
+                                <ToggleSwitch
+                                    x:Name="LockedToggle"
+                                    Header="锁定并允许鼠标穿透"
+                                    OffContent="关闭"
+                                    OnContent="开启"
+                                    Toggled="LockedToggle_Toggled" />
+                                <ToggleSwitch
+                                    x:Name="TopmostToggle"
+                                    Header="始终置顶"
+                                    OffContent="关闭"
+                                    OnContent="开启"
+                                    Toggled="TopmostToggle_Toggled" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="TextCategoryButton" Grid.Column="1" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <FontIcon FontSize="15" Glyph="&#xE8D2;" />
+                        <TextBlock Text="字幕" />
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout
+                            x:Name="TextCategoryFlyout"
+                            FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                            Opening="CategoryFlyout_Opening"
+                            Placement="Bottom"
+                            ShouldConstrainToRootBounds="False">
+                            <StackPanel Width="390" Spacing="12">
+                                <TextBlock FontSize="20" FontWeight="SemiBold" Text="字幕样式" />
+                                <Grid RowSpacing="8" ColumnSpacing="8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="42" />
+                                        <RowDefinition Height="42" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button x:Name="OriginalButton" HorizontalAlignment="Stretch" Content="文字">
+                                        <Button.Flyout>
+                                            <Flyout
+                                                x:Name="OriginalFlyout"
+                                                FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                                                Opened="EditorFlyout_Opened"
+                                                Opening="EditorFlyout_Opening"
+                                                Placement="Right"
+                                                ShouldConstrainToRootBounds="False">
+                                                <ui:TextStyleEditor x:Name="OriginalEditor" />
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+
+                                    <Button x:Name="TranslationButton" Grid.Column="1" HorizontalAlignment="Stretch" Content="翻译">
+                                        <Button.Flyout>
+                                            <Flyout
+                                                x:Name="TranslationFlyout"
+                                                FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                                                Opened="EditorFlyout_Opened"
+                                                Opening="EditorFlyout_Opening"
+                                                Placement="Right"
+                                                ShouldConstrainToRootBounds="False">
+                                                <ui:TextStyleEditor x:Name="TranslationEditor" />
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+
+                                    <Button x:Name="NextOriginalButton" Grid.Row="1" HorizontalAlignment="Stretch" Content="下句文字">
+                                        <Button.Flyout>
+                                            <Flyout
+                                                x:Name="NextOriginalFlyout"
+                                                FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                                                Opened="EditorFlyout_Opened"
+                                                Opening="EditorFlyout_Opening"
+                                                Placement="Right"
+                                                ShouldConstrainToRootBounds="False">
+                                                <ui:TextStyleEditor x:Name="NextOriginalEditor" />
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+
+                                    <Button x:Name="NextTranslationButton" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Content="下句翻译">
+                                        <Button.Flyout>
+                                            <Flyout
+                                                x:Name="NextTranslationFlyout"
+                                                FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                                                Opened="EditorFlyout_Opened"
+                                                Opening="EditorFlyout_Opening"
+                                                Placement="Right"
+                                                ShouldConstrainToRootBounds="False">
+                                                <ui:TextStyleEditor x:Name="NextTranslationEditor" />
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="LayoutCategoryButton" Grid.Column="2" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <FontIcon FontSize="15" Glyph="&#xE8A9;" />
+                        <TextBlock Text="布局" />
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout
+                            x:Name="LayoutFlyout"
+                            FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                            Opening="CategoryFlyout_Opening"
+                            Placement="Bottom"
+                            ShouldConstrainToRootBounds="False">
+                            <StackPanel Width="300" Spacing="14">
+                                <TextBlock FontSize="20" FontWeight="SemiBold" Text="下一句布局" />
+                                <ComboBox
+                                    x:Name="NextLinePositionCombo"
+                                    Header="奇数句中的位置"
+                                    HorizontalAlignment="Stretch"
+                                    SelectionChanged="NextLinePositionCombo_SelectionChanged">
+                                    <ComboBoxItem Content="左侧" />
+                                    <ComboBoxItem Content="上方" />
+                                    <ComboBoxItem Content="右侧" />
+                                    <ComboBoxItem Content="下方" />
+                                </ComboBox>
+                                <ToggleSwitch
+                                    x:Name="AlternatePositionToggle"
+                                    Header="奇偶句交换位置"
+                                    OffContent="关闭"
+                                    OnContent="开启"
+                                    Toggled="AlternatePositionToggle_Toggled"
+                                    ToolTipService.ToolTip="偶数句使用与所选方向相反的位置" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="BackgroundButton" Grid.Column="3" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <FontIcon FontSize="15" Glyph="&#xE790;" />
+                        <TextBlock Text="背景" />
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout
+                            x:Name="BackgroundFlyout"
+                            FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                            Opened="EditorFlyout_Opened"
+                            Opening="EditorFlyout_Opening"
+                            Placement="Bottom"
+                            ShouldConstrainToRootBounds="False">
+                            <StackPanel Width="430" Spacing="14">
+                                <Grid Width="360" HorizontalAlignment="Center">
+                                    <TextBlock FontSize="20" FontWeight="SemiBold" Text="背景" />
+                                    <ContentControl x:Name="BackgroundFocusTarget" Width="1" Height="1" IsTabStop="True" Opacity="0" />
+                                </Grid>
+                                <Grid Width="360" HorizontalAlignment="Center" ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleButton x:Name="SolidBackgroundButton" HorizontalAlignment="Stretch" Content="纯色" Click="SolidBackgroundButton_Click" />
+                                    <ToggleButton x:Name="ImageBackgroundButton" Grid.Column="1" HorizontalAlignment="Stretch" Content="图片" Click="ImageBackgroundButton_Click" />
+                                </Grid>
+
+                                <ToggleSwitch
+                                    x:Name="AcrylicToggle"
+                                    Width="360"
+                                    HorizontalAlignment="Center"
+                                    Header="Windows 系统亚克力"
+                                    OffContent="关闭"
+                                    OnContent="开启"
+                                    Toggled="AcrylicToggle_Toggled" />
+
+                                <Grid x:Name="BackgroundModeContent" Height="470">
+                                    <StackPanel x:Name="SolidBackgroundPanel" Width="360" HorizontalAlignment="Center" VerticalAlignment="Top" Spacing="8">
+                                        <TextBlock FontWeight="SemiBold" Text="背景颜色" />
+                                        <ComboBox
+                                            x:Name="BackgroundColorModeCombo"
+                                            HorizontalAlignment="Stretch"
+                                            SelectionChanged="BackgroundColorModeCombo_SelectionChanged">
+                                            <ComboBoxItem Content="自定义" />
+                                            <ComboBoxItem Content="系统主题色" />
+                                        </ComboBox>
+                                        <Grid Width="360">
+                                            <ColorPicker
+                                                x:Name="BackgroundColorPicker"
+                                                Width="360"
+                                                ColorChanged="BackgroundColorPicker_ColorChanged"
+                                                IsAlphaEnabled="False"
+                                                IsAlphaTextInputVisible="False"
+                                                IsColorChannelTextInputVisible="False"
+                                                IsColorPreviewVisible="False" />
+                                            <Border
+                                                x:Name="BackgroundColorPreview"
+                                                Width="150"
+                                                Height="32"
+                                                Margin="0,0,14,16"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Bottom"
+                                                BorderBrush="#66FFFFFF"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                ToolTipService.ToolTip="当前背景颜色" />
+                                        </Grid>
+                                        <Grid RowSpacing="2">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="透明度" />
+                                            <TextBlock x:Name="BackgroundColorOpacityValue" Grid.Column="1" />
+                                            <Slider
+                                                x:Name="BackgroundColorOpacitySlider"
+                                                Grid.Row="1"
+                                                Grid.ColumnSpan="2"
+                                                Maximum="100"
+                                                Minimum="0"
+                                                StepFrequency="1"
+                                                ValueChanged="BackgroundColorOpacitySlider_ValueChanged" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <StackPanel x:Name="ImageBackgroundPanel" Width="360" HorizontalAlignment="Center" VerticalAlignment="Top" Spacing="12" Visibility="Collapsed">
+                                        <Grid ColumnSpacing="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Button Click="ChooseBackgroundImage_Click">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <FontIcon FontSize="15" Glyph="&#xE8B7;" />
+                                                    <TextBlock Text="选择图片" />
+                                                </StackPanel>
+                                            </Button>
+                                            <TextBlock x:Name="BackgroundImagePathText" Grid.Column="1" VerticalAlignment="Center" Opacity="0.65" Text="尚未选择图片" TextTrimming="CharacterEllipsis" />
+                                        </Grid>
+                                        <ComboBox x:Name="BackgroundImageFillCombo" Header="填充方式" HorizontalAlignment="Stretch" SelectionChanged="BackgroundImageFillCombo_SelectionChanged">
+                                            <ComboBoxItem Content="填充并裁剪" />
+                                            <ComboBoxItem Content="完整显示" />
+                                            <ComboBoxItem Content="拉伸" />
+                                        </ComboBox>
+                                        <StackPanel Spacing="4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="透明度" />
+                                                <TextBlock x:Name="BackgroundImageOpacityValue" Grid.Column="1" />
+                                            </Grid>
+                                            <Slider x:Name="BackgroundImageOpacitySlider" Maximum="100" Minimum="0" StepFrequency="1" ValueChanged="BackgroundImageOpacitySlider_ValueChanged" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+                <Button x:Name="MoreButton" Grid.Column="4" Width="42" Height="42" Padding="0" ToolTipService.ToolTip="更多">
+                    <FontIcon FontSize="16" Glyph="&#xE712;" />
+                    <Button.Flyout>
+                        <Flyout
+                            x:Name="MoreFlyout"
+                            FlyoutPresenterStyle="{StaticResource UnconstrainedFlyoutPresenterStyle}"
+                            Opening="CategoryFlyout_Opening"
+                            Placement="Bottom"
+                            ShouldConstrainToRootBounds="False">
+                            <StackPanel Width="220" Spacing="8">
+                                <Button HorizontalAlignment="Stretch" Click="ResetButton_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="9">
+                                        <FontIcon FontSize="15" Glyph="&#xE777;" />
+                                        <TextBlock Text="恢复默认" />
+                                    </StackPanel>
+                                </Button>
+                                <Button HorizontalAlignment="Stretch" Click="ExitButton_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="9">
+                                        <FontIcon FontSize="15" Glyph="&#xE7E8;" />
+                                        <TextBlock Text="退出程序" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
