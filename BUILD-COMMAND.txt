@@ -1,0 +1,13 @@
+Build from WSL:
+
+chmod +x build-wsl.sh
+./build-wsl.sh
+
+Run the Windows-local build:
+
+powershell.exe -NoProfile -Command "& \"$env:LOCALAPPDATA\MpcLyricsCSharpBuild\run\MpcLyrics.exe\" --settings"
+
+Run diagnostics:
+
+chmod +x run-diagnostic-wsl.sh
+./run-diagnostic-wsl.sh
